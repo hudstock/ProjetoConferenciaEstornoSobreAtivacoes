@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.conferenciaestorno.domain.model.Lancamento;
+import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 import com.example.conferenciaestorno.domain.repository.LancamentoRepository;
 
 @Configuration
@@ -36,6 +37,22 @@ public class MainRunner implements CommandLineRunner{
 		results2.stream().forEach((Lancamento lancamento) -> {
 		    System.out.println(lancamento);
 		});
+		
+		Lancamento novoLancamento = new Lancamento();
+		
+		novoLancamento.setCnpjCpf("teste");
+		novoLancamento.setPedido("teste");
+		novoLancamento.setTipoLancamento(TipoLancamentoEnum.ESTORNO);
+		
+		lancamentoRepository.save(novoLancamento);
+		
+		System.out.println("Buscando Lancamento com Pedido = teste");
+		List<Lancamento> results3 = lancamentoRepository.findAllByPedido("teste");		
+		results3.stream().forEach((Lancamento lancamento) -> {
+		    System.out.println(lancamento);
+		});
+		
+		
 
 	}
 
