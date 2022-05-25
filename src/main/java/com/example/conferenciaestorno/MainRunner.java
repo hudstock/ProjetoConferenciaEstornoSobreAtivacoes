@@ -21,7 +21,14 @@ public class MainRunner implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		System.out.println("Starting Main Runner");
 		testeAmbiente();
-
+		
+		//Ler planilha e importar no banco de dados
+		
+		//gerar 1ª aba contendo apenas os pedidos (contratos)
+		//gerar 2ª aba contendo apenas os estornos
+		//gerar 3ª aba contendo os agrupamentos de pedidos e cnpj_cpf
+		//gerar 4ª aba contendo os pedidos sem estorno
+		//gerar 5ª aba contendo os estornos sem pedido
 	}
 
 	private void testeAmbiente() {
@@ -60,7 +67,6 @@ public class MainRunner implements CommandLineRunner {
 		results3.stream().forEach((Lancamento lancamento) -> {
 			System.out.println(lancamento);
 		});
-
 	}
 
 }
