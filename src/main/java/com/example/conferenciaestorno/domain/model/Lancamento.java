@@ -142,4 +142,10 @@ public class Lancamento implements Serializable {
 		return Objects.equals(id, other.id);
 	}
 
+	@Override
+	public String toString() {
+		return "Lancamento [id=" + id + ", tipoLancamento=" + tipoLancamento + ", mesReferencia=" + mesReferencia
+				+ ", pedido=" + pedido + ", plano=" + plano + ", cnpjCpf=" + cnpjCpf + ", motivoObservacao="
+				+ motivoObservacao + ", valor=" + valor + ", mercadoContrato=" + mercadoContrato + "]";
+	}	
 }
