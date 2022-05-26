@@ -3,6 +3,7 @@ package com.example.conferenciaestorno;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,9 +79,9 @@ public class MainRunner implements CommandLineRunner {
 		});
 	}
 
-	private void testeAbrirPlanilha() throws FileNotFoundException, IOException {
-		String arquivo = "/home/hud/Dev/teste.xlsx";
-		Workbook wb = new XSSFWorkbook(new FileInputStream(arquivo));
+	private void testeAbrirPlanilha() throws FileNotFoundException, IOException {		
+		InputStream input = getClass().getResourceAsStream("/teste.xlsx");
+		Workbook wb = new XSSFWorkbook(input);
 		Sheet sheet = wb.getSheetAt(0);
 		for (Row row : sheet) {
 			for (Cell cell : row) {
