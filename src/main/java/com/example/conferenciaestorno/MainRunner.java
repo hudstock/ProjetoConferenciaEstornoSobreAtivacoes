@@ -24,6 +24,10 @@ public class MainRunner implements CommandLineRunner {
 		
 		//Ler planilha e importar no banco de dados
 		
+		//iniciando informando qual o arquivo será utilizado, 
+		//criar uma forma de já duplicar o arquivo e trabalhar com o arquivo recem duplicado. 
+		//Assim nao preciso ficar manualmente apagando e renomeando o arquivo. 
+		
 		//gerar 1ª aba contendo apenas os pedidos (contratos)
 		//gerar 2ª aba contendo apenas os estornos
 		//gerar 3ª aba contendo os agrupamentos de pedidos e cnpj_cpf
