@@ -1,8 +1,17 @@
 package com.example.conferenciaestorno;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -32,15 +41,14 @@ public class MainRunner implements CommandLineRunner {
 		//gerar 2ª aba contendo apenas os estornos
 		//gerar 3ª aba contendo os agrupamentos de pedidos e cnpj_cpf
 		//gerar 4ª aba contendo os pedidos sem estorno
-		//gerar 5ª aba contendo os estornos sem pedido
-	}
+		//gerar 5ª aba contendo os estornos sem pedido	}
 
 	private void testeAmbiente() {
 
 		Optional<Lancamento> result = lancamentoRepository.findById(1L);
 
 		System.out.println("Buscando Lancamento com id = 1");
-		if (result.isPresent()){
+		if (result.isPresent()) {
 			System.out.println(result.get());
 		} else {
 			System.out.println("Lançamento id não encontrado");
@@ -72,5 +80,20 @@ public class MainRunner implements CommandLineRunner {
 			System.out.println(lancamento);
 		});
 	}
+
+	private void testeAbrirPlanilha() throws FileNotFoundException, IOException {		
+		InputStream input = getClass().getResourceAsStream("/teste.xlsx");
+		Workbook wb = new XSSFWorkbook(input);
+		Sheet sheet = wb.getSheetAt(0);
+		for (Row row : sheet) {
+			for (Cell cell : row) {
+				System.out.println(cell.getStringCellValue());
+			}
+		}
+	}
+
+	/*
+	 * for (Row row : sheet) { for (Cell cell : row) { // Do something here } }
+	 */
 
 }
