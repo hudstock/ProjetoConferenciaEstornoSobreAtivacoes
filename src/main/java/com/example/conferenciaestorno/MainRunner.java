@@ -29,8 +29,9 @@ public class MainRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Starting Main Runner");
-		testeAmbiente();
-		
+		testeAmbiente(); 
+		testeAbrirPlanilha();
+	}
 		//Ler planilha e importar no banco de dados
 		
 		//iniciando informando qual o arquivo será utilizado, 
