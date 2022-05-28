@@ -1,13 +1,15 @@
 package com.example.conferenciaestorno;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -29,20 +31,23 @@ public class MainRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Starting Main Runner");
-		testeAmbiente(); 
-		testeAbrirPlanilha();
+		// testeAmbiente();
+		// testeAbrirPlanilha();
+		lerPlanilha();
+
 	}
-		//Ler planilha e importar no banco de dados
-		
-		//iniciando informando qual o arquivo será utilizado, 
-		//criar uma forma de já duplicar o arquivo e trabalhar com o arquivo recem duplicado. 
-		//Assim nao preciso ficar manualmente apagando e renomeando o arquivo. 
-		
-		//gerar 1ª aba contendo apenas os pedidos (contratos)
-		//gerar 2ª aba contendo apenas os estornos
-		//gerar 3ª aba contendo os agrupamentos de pedidos e cnpj_cpf
-		//gerar 4ª aba contendo os pedidos sem estorno
-		//gerar 5ª aba contendo os estornos sem pedido	}
+	// Ler planilha e importar no banco de dados
+
+	// iniciando informando qual o arquivo será utilizado,
+	// criar uma forma de já duplicar o arquivo e trabalhar com o arquivo recem
+	// duplicado.
+	// Assim nao preciso ficar manualmente apagando e renomeando o arquivo.
+
+	// gerar 1ª aba contendo apenas os pedidos (contratos)
+	// gerar 2ª aba contendo apenas os estornos
+	// gerar 3ª aba contendo os agrupamentos de pedidos e cnpj_cpf
+	// gerar 4ª aba contendo os pedidos sem estorno
+	// gerar 5ª aba contendo os estornos sem pedido }
 
 	private void testeAmbiente() {
 
@@ -82,7 +87,34 @@ public class MainRunner implements CommandLineRunner {
 		});
 	}
 
-	private void testeAbrirPlanilha() throws FileNotFoundException, IOException {		
+	public void lerPlanilha() throws IOException {
+		InputStream input = getClass().getResourceAsStream("/Arquivo.xlsx");
+		Workbook wb = new XSSFWorkbook(input);
+		Sheet sheet = wb.getSheetAt(0);
+		Iterator<Row> linhaIterator = sheet.iterator();
+		int contador = 0;
+		while (linhaIterator.hasNext()) {
+			Row row = linhaIterator.next();
+			Cell celula = row.getCell(0);
+			if (celula != null) {
+				CellType type = celula.getCellType();
+				if (type == CellType.NUMERIC)
+					System.out.println(formatarData(celula.getDateCellValue()));
+				if (type == CellType.STRING)
+					System.out.println(celula.getStringCellValue());
+			}
+			contador++;
+		}
+		System.out.println("Total de Registros: " + contador);
+		wb.close();
+	}
+
+	private static String formatarData(java.util.Date dataFimPlaca) {
+		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+		return formato.format(dataFimPlaca);
+	}
+
+	private void testeAbrirPlanilha() throws FileNotFoundException, IOException {
 		InputStream input = getClass().getResourceAsStream("/teste.xlsx");
 		Workbook wb = new XSSFWorkbook(input);
 		Sheet sheet = wb.getSheetAt(0);
