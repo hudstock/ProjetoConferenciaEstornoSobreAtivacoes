@@ -3,6 +3,7 @@ package com.example.conferenciaestorno;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -92,21 +93,126 @@ public class MainRunner implements CommandLineRunner {
 		Workbook wb = new XSSFWorkbook(input);
 		Sheet sheet = wb.getSheetAt(0);
 		Iterator<Row> linhaIterator = sheet.iterator();
-		int contador = 0;
+		int contador = 1;
 		while (linhaIterator.hasNext()) {
 			Row row = linhaIterator.next();
-			Cell celula = row.getCell(0);
-			if (celula != null) {
-				CellType type = celula.getCellType();
-				if (type == CellType.NUMERIC)
-					System.out.println(formatarData(celula.getDateCellValue()));
-				if (type == CellType.STRING)
-					System.out.println(celula.getStringCellValue());
+			if (row.getRowNum() > 1) {
+				lerLinha(row);
+				contador++;
 			}
-			contador++;
 		}
 		System.out.println("Total de Registros: " + contador);
 		wb.close();
+	}
+
+	private void lerLinha(Row row) {
+		String mesReferencia = "";
+		String pedido = "";
+		String plano = "";
+		String CnpjCpf = "";
+		String motivoObservacao = "";
+		BigDecimal valor = BigDecimal.ZERO;
+		String mercadoContrato = "";
+		String indicador = "";
+		TipoLancamentoEnum tipoLancamento;
+		Cell cell = row.getCell(0);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC)
+				mesReferencia = formatarData(cell.getDateCellValue());
+			if (type == CellType.STRING)
+				mesReferencia = cell.getStringCellValue();
+		}
+		cell = row.getCell(5);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC) {
+				int result = (int) Math.round(cell.getNumericCellValue());
+				pedido = String.valueOf(result);
+			} else {
+				pedido = cell.getStringCellValue();
+			}
+		}
+		cell = row.getCell(7);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC)
+				plano = String.valueOf(cell.getNumericCellValue());
+			if (type == CellType.STRING)
+				plano = cell.getStringCellValue();
+		}
+		cell = row.getCell(9);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC)
+				CnpjCpf = String.valueOf(cell.getNumericCellValue());
+			if (type == CellType.STRING)
+				CnpjCpf = cell.getStringCellValue();
+		}
+		cell = row.getCell(11);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC)
+				motivoObservacao = String.valueOf(cell.getNumericCellValue());
+			if (type == CellType.STRING)
+				motivoObservacao = cell.getStringCellValue();
+		}
+		cell = row.getCell(13);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC)
+				valor = BigDecimal.valueOf(cell.getNumericCellValue());
+		}
+		if (valor == BigDecimal.ZERO) {
+			cell = row.getCell(14);
+			if (cell != null) {
+				CellType type = cell.getCellType();
+				if (type == CellType.NUMERIC)
+					valor = BigDecimal.valueOf(cell.getNumericCellValue());
+			}
+			if (valor == BigDecimal.ZERO) {
+				System.out.println("Valor não encontrado");
+			}
+		}
+		cell = row.getCell(15);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			System.out.println("Tipo do Campo:" + type);
+			if (type == CellType.NUMERIC) {
+				int result = (int) Math.round(cell.getNumericCellValue());
+				mercadoContrato = String.valueOf(result);
+			} else {
+				mercadoContrato = cell.getStringCellValue();
+			}
+		}
+
+		cell = row.getCell(18);
+		if (cell != null) {
+			CellType type = cell.getCellType();
+			System.out.println("Tipo do Campo:" + type);
+			if (type == CellType.STRING) {
+				indicador = cell.getStringCellValue();
+				if (indicador.equals("A")) {
+					tipoLancamento = TipoLancamentoEnum.ESTORNO;
+				}
+			} else {
+				tipoLancamento = TipoLancamentoEnum.CONTRATO;
+			}
+		}
+		int linhaPlanilha = row.getRowNum();
+		System.out.println("Linha: " + linhaPlanilha + " Mês Referencia:" + mesReferencia + " Pedido:" + pedido
+				+ " Plano:" + plano + " CNPJ:" + CnpjCpf + " Motivo/Observacao:" + motivoObservacao + " Valor:" + valor
+				+ " Mercado/Contrato: " + mercadoContrato);
+		Lancamento lancamento = new Lancamento();
+		lancamento.setLinhaPlanilha(linhaPlanilha);
+		lancamento.setMesReferencia(mesReferencia);
+		lancamento.setPedido(pedido);
+		lancamento.setPlano(plano);
+		lancamento.setCnpjCpf(CnpjCpf);
+		lancamento.setMotivoObservacao(motivoObservacao);
+		lancamento.setValor(valor);
+		lancamento.setMercadoContrato(mercadoContrato);
+		lancamentoRepository.save(lancamento);
 	}
 
 	private static String formatarData(java.util.Date dataFimPlaca) {
