@@ -114,7 +114,7 @@ public class MainRunner implements CommandLineRunner {
 		BigDecimal valor = BigDecimal.ZERO;
 		String mercadoContrato = "";
 		String indicador = "";
-		TipoLancamentoEnum tipoLancamento;
+		TipoLancamentoEnum tipoLancamento = TipoLancamentoEnum.CONTRATO;
 		Cell cell = row.getCell(0);
 		if (cell != null) {
 			CellType type = cell.getCellType();
@@ -135,27 +135,28 @@ public class MainRunner implements CommandLineRunner {
 		}
 		cell = row.getCell(7);
 		if (cell != null) {
-			CellType type = cell.getCellType();
-			if (type == CellType.NUMERIC)
-				plano = String.valueOf(cell.getNumericCellValue());
-			if (type == CellType.STRING)
-				plano = cell.getStringCellValue();
+			plano = cell.toString();/*
+									 * CellType type = cell.getCellType(); if (type == CellType.NUMERIC) plano =
+									 * String.valueOf(cell.getNumericCellValue()); if (type == CellType.STRING)
+									 * plano = cell.getStringCellValue();
+									 */
 		}
 		cell = row.getCell(9);
 		if (cell != null) {
-			CellType type = cell.getCellType();
-			if (type == CellType.NUMERIC)
-				CnpjCpf = String.valueOf(cell.getNumericCellValue());
-			if (type == CellType.STRING)
-				CnpjCpf = cell.getStringCellValue();
+			CnpjCpf = cell.toString();/*
+										 * CellType type = cell.getCellType(); if (type == CellType.NUMERIC) CnpjCpf =
+										 * String.valueOf(cell.getNumericCellValue()); if (type == CellType.STRING)
+										 * CnpjCpf = cell.getStringCellValue();
+										 */
 		}
 		cell = row.getCell(11);
 		if (cell != null) {
-			CellType type = cell.getCellType();
-			if (type == CellType.NUMERIC)
-				motivoObservacao = String.valueOf(cell.getNumericCellValue());
-			if (type == CellType.STRING)
-				motivoObservacao = cell.getStringCellValue();
+			motivoObservacao = cell
+					.toString();/*
+								 * CellType type = cell.getCellType(); if (type == CellType.NUMERIC)
+								 * motivoObservacao = String.valueOf(cell.getNumericCellValue()); if (type ==
+								 * CellType.STRING) motivoObservacao = cell.getStringCellValue();
+								 */
 		}
 		cell = row.getCell(13);
 		if (cell != null) {
@@ -185,7 +186,7 @@ public class MainRunner implements CommandLineRunner {
 			}
 		}
 
-		cell = row.getCell(18);
+		cell = row.getCell(17);
 		if (cell != null) {
 			CellType type = cell.getCellType();
 			System.out.println("Tipo do Indicador:" + type);
@@ -197,20 +198,23 @@ public class MainRunner implements CommandLineRunner {
 			} else {
 				tipoLancamento = TipoLancamentoEnum.CONTRATO;
 			}
+		} else {
+			System.out.println("campo indicador não encontrado");
 		}
-		int linhaPlanilha = row.getRowNum()+1;
+		int linhaPlanilha = row.getRowNum() + 1;
 		System.out.println("Linha: " + linhaPlanilha + " Mês Referencia:" + mesReferencia + " Pedido:" + pedido
 				+ " Plano:" + plano + " CNPJ:" + CnpjCpf + " Motivo/Observacao:" + motivoObservacao + " Valor:" + valor
 				+ " Mercado/Contrato: " + mercadoContrato);
 		Lancamento lancamento = new Lancamento();
 		lancamento.setLinhaPlanilha(linhaPlanilha);
 		lancamento.setMesReferencia(mesReferencia);
-		lancamento.setPedido(pedido);
-		lancamento.setPlano(plano);
+		lancamento.setPedido(pedido.trim());
+		lancamento.setPlano(plano.trim());
 		lancamento.setCnpjCpf(CnpjCpf);
-		lancamento.setMotivoObservacao(motivoObservacao);
+		lancamento.setMotivoObservacao(motivoObservacao.trim());
 		lancamento.setValor(valor);
-		lancamento.setMercadoContrato(mercadoContrato);
+		lancamento.setMercadoContrato(mercadoContrato.trim());
+		lancamento.setTipoLancamento(tipoLancamento);
 		lancamentoRepository.save(lancamento);
 	}
 
