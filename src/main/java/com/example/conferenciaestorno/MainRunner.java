@@ -96,7 +96,7 @@ public class MainRunner implements CommandLineRunner {
 		int contador = 1;
 		while (linhaIterator.hasNext()) {
 			Row row = linhaIterator.next();
-			if (row.getRowNum() > 1) {
+			if (row.getRowNum() >= 1) {
 				lerLinha(row);
 				contador++;
 			}
@@ -177,7 +177,6 @@ public class MainRunner implements CommandLineRunner {
 		cell = row.getCell(15);
 		if (cell != null) {
 			CellType type = cell.getCellType();
-			System.out.println("Tipo do Campo:" + type);
 			if (type == CellType.NUMERIC) {
 				int result = (int) Math.round(cell.getNumericCellValue());
 				mercadoContrato = String.valueOf(result);
@@ -189,7 +188,7 @@ public class MainRunner implements CommandLineRunner {
 		cell = row.getCell(18);
 		if (cell != null) {
 			CellType type = cell.getCellType();
-			System.out.println("Tipo do Campo:" + type);
+			System.out.println("Tipo do Indicador:" + type);
 			if (type == CellType.STRING) {
 				indicador = cell.getStringCellValue();
 				if (indicador.equals("A")) {
@@ -199,7 +198,7 @@ public class MainRunner implements CommandLineRunner {
 				tipoLancamento = TipoLancamentoEnum.CONTRATO;
 			}
 		}
-		int linhaPlanilha = row.getRowNum();
+		int linhaPlanilha = row.getRowNum()+1;
 		System.out.println("Linha: " + linhaPlanilha + " Mês Referencia:" + mesReferencia + " Pedido:" + pedido
 				+ " Plano:" + plano + " CNPJ:" + CnpjCpf + " Motivo/Observacao:" + motivoObservacao + " Valor:" + valor
 				+ " Mercado/Contrato: " + mercadoContrato);
