@@ -32,23 +32,31 @@ public class MainRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Starting Main Runner");
+		//TESTES
 		// testeAmbiente();
 		// testeAbrirPlanilha();
-		lerPlanilha();
+		//testeBuscarLancamentosPorTipo();
 
+		//EXECUÇÕES
+		// lerPlanilha();
+		//CRIAR METODO PARA NOVA ABA DE APENAS CONTRATOS
+		//CRIAR MÉTODO PARA NOVA ABA APENAS ESTORNOS
+		//CRIAR MÉTODO PARA NOVA ABA AGRUPAMENTO CONTRATOS E ESTORNOS E TOTAIS
+		//CRIAR METODO PARA NOVA ABA CONTRATOS SEM ESTORNOS
+		//CRIAR METODO PARA NOVA ABA ESTORNOS SEM CONTRATOS
+		
 	}
-	// Ler planilha e importar no banco de dados
 
-	// iniciando informando qual o arquivo será utilizado,
-	// criar uma forma de já duplicar o arquivo e trabalhar com o arquivo recem
-	// duplicado.
-	// Assim nao preciso ficar manualmente apagando e renomeando o arquivo.
-
-	// gerar 1ª aba contendo apenas os pedidos (contratos)
-	// gerar 2ª aba contendo apenas os estornos
-	// gerar 3ª aba contendo os agrupamentos de pedidos e cnpj_cpf
-	// gerar 4ª aba contendo os pedidos sem estorno
-	// gerar 5ª aba contendo os estornos sem pedido }
+	/*
+	 * FINALIZADOS Ler planilha e gravar em banco de dados; Consulta de todos os
+	 * contratos e todos os estornos conferidos;
+	 * 
+	 * PENDENTES gerar 1ª aba contendo apenas os pedidos (contratos) gerar; 2ª aba
+	 * contendo apenas os estornos gerar; 3ª aba contendo os agrupamentos de pedidos
+	 * e cnpj_cpf gerar; 4ª aba contendo os pedidos sem estorno gerar; 5ª aba contendo
+	 * os estornos sem pedido 
+	 * 
+	 */
 
 	private void testeAmbiente() {
 
@@ -216,6 +224,13 @@ public class MainRunner implements CommandLineRunner {
 		lancamento.setMercadoContrato(mercadoContrato.trim());
 		lancamento.setTipoLancamento(tipoLancamento);
 		lancamentoRepository.save(lancamento);
+	}
+
+	private void testeBuscarLancamentosPorTipo() {
+		List<Lancamento> result = lancamentoRepository.findAllByTipoLancamento(TipoLancamentoEnum.CONTRATO);
+		System.out.println(result.size());
+		result = lancamentoRepository.findAllByTipoLancamento(TipoLancamentoEnum.ESTORNO);
+		System.out.println(result.size());
 	}
 
 	private static String formatarData(java.util.Date dataFimPlaca) {

@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.conferenciaestorno.domain.model.Lancamento;
+import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 
 public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
 	
 	List<Lancamento> findAllByPedido(String pedido);
 	List<Lancamento> findAllByCnpjCpf(String pedido);
-
+	List<Lancamento> findAllByTipoLancamento(TipoLancamentoEnum tipoLancamento);
 }
