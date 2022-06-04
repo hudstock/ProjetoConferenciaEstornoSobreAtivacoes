@@ -2,6 +2,7 @@ package com.example.conferenciaestorno.domain.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -20,12 +21,14 @@ public class Lancamento implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private Integer linhaPlanilha;
 
 	private TipoLancamentoEnum tipoLancamento;
 
 	private String mesReferencia;
+
+	private LocalDate dataReferencia;
 
 	private String pedido;
 
@@ -33,7 +36,7 @@ public class Lancamento implements Serializable {
 
 	private String cnpjCpf;
 
-	@Column(length=1000)
+	@Column(length = 1000)
 	private String motivoObservacao;
 
 	private BigDecimal valor;
@@ -45,13 +48,14 @@ public class Lancamento implements Serializable {
 	}
 
 	public Lancamento(Long id, Integer linhaPlanilha, TipoLancamentoEnum tipoLancamento, String mesReferencia,
-			String pedido, String plano, String cnpjCpf, String motivoObservacao, BigDecimal valor,
-			String mercadoContrato) {
+			LocalDate dataReferencia, String pedido, String plano, String cnpjCpf, String motivoObservacao,
+			BigDecimal valor, String mercadoContrato) {
 		super();
 		this.id = id;
 		this.linhaPlanilha = linhaPlanilha;
 		this.tipoLancamento = tipoLancamento;
 		this.mesReferencia = mesReferencia;
+		this.dataReferencia = dataReferencia;
 		this.pedido = pedido;
 		this.plano = plano;
 		this.cnpjCpf = cnpjCpf;
@@ -140,6 +144,14 @@ public class Lancamento implements Serializable {
 		this.mercadoContrato = mercadoContrato;
 	}
 
+	public LocalDate getDataReferencia() {
+		return dataReferencia;
+	}
+
+	public void setDataReferencia(LocalDate dataReferencia) {
+		this.dataReferencia = dataReferencia;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -160,8 +172,8 @@ public class Lancamento implements Serializable {
 	@Override
 	public String toString() {
 		return "Lancamento [id=" + id + ", linhaPlanilha=" + linhaPlanilha + ", tipoLancamento=" + tipoLancamento
-				+ ", mesReferencia=" + mesReferencia + ", pedido=" + pedido + ", plano=" + plano + ", cnpjCpf="
-				+ cnpjCpf + ", motivoObservacao=" + motivoObservacao + ", valor=" + valor + ", mercadoContrato="
-				+ mercadoContrato + "]";
-	}	
+				+ ", mesReferencia=" + mesReferencia + ", dataReferencia=" + dataReferencia + ", pedido=" + pedido
+				+ ", plano=" + plano + ", cnpjCpf=" + cnpjCpf + ", motivoObservacao=" + motivoObservacao + ", valor="
+				+ valor + ", mercadoContrato=" + mercadoContrato + "]";
+	}
 }

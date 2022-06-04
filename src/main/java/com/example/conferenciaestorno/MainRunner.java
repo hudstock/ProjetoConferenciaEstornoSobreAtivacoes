@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.type.descriptor.java.LocalDateJavaDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import com.example.conferenciaestorno.domain.model.Lancamento;
 import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 import com.example.conferenciaestorno.domain.repository.LancamentoRepository;
+import com.example.conferenciaestorno.domain.util.Utils;
 
 @Configuration
 public class MainRunner implements CommandLineRunner {
@@ -32,19 +35,19 @@ public class MainRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Starting Main Runner");
-		//TESTES
+		// TESTES
 		// testeAmbiente();
 		// testeAbrirPlanilha();
-		//testeBuscarLancamentosPorTipo();
+		// testeBuscarLancamentosPorTipo();
 
-		//EXECUÇÕES
-		// lerPlanilha();
-		//CRIAR METODO PARA NOVA ABA DE APENAS CONTRATOS
-		//CRIAR MÉTODO PARA NOVA ABA APENAS ESTORNOS
-		//CRIAR MÉTODO PARA NOVA ABA AGRUPAMENTO CONTRATOS E ESTORNOS E TOTAIS
-		//CRIAR METODO PARA NOVA ABA CONTRATOS SEM ESTORNOS
-		//CRIAR METODO PARA NOVA ABA ESTORNOS SEM CONTRATOS
-		
+		// EXECUÇÕES
+		importarPlanilha();
+		// CRIAR METODO PARA NOVA ABA DE APENAS CONTRATOS
+		// CRIAR MÉTODO PARA NOVA ABA APENAS ESTORNOS
+		// CRIAR MÉTODO PARA NOVA ABA AGRUPAMENTO CONTRATOS E ESTORNOS E TOTAIS
+		// CRIAR METODO PARA NOVA ABA CONTRATOS SEM ESTORNOS
+		// CRIAR METODO PARA NOVA ABA ESTORNOS SEM CONTRATOS
+
 	}
 
 	/*
@@ -53,8 +56,8 @@ public class MainRunner implements CommandLineRunner {
 	 * 
 	 * PENDENTES gerar 1ª aba contendo apenas os pedidos (contratos) gerar; 2ª aba
 	 * contendo apenas os estornos gerar; 3ª aba contendo os agrupamentos de pedidos
-	 * e cnpj_cpf gerar; 4ª aba contendo os pedidos sem estorno gerar; 5ª aba contendo
-	 * os estornos sem pedido 
+	 * e cnpj_cpf gerar; 4ª aba contendo os pedidos sem estorno gerar; 5ª aba
+	 * contendo os estornos sem pedido
 	 * 
 	 */
 
@@ -96,7 +99,7 @@ public class MainRunner implements CommandLineRunner {
 		});
 	}
 
-	public void lerPlanilha() throws IOException {
+	public void importarPlanilha() throws IOException {
 		InputStream input = getClass().getResourceAsStream("/Arquivo.xlsx");
 		Workbook wb = new XSSFWorkbook(input);
 		Sheet sheet = wb.getSheetAt(0);
@@ -105,7 +108,7 @@ public class MainRunner implements CommandLineRunner {
 		while (linhaIterator.hasNext()) {
 			Row row = linhaIterator.next();
 			if (row.getRowNum() >= 1) {
-				lerLinha(row);
+				importarLinha(row);
 				contador++;
 			}
 		}
@@ -113,8 +116,9 @@ public class MainRunner implements CommandLineRunner {
 		wb.close();
 	}
 
-	private void lerLinha(Row row) {
+	private void importarLinha(Row row) {
 		String mesReferencia = "";
+		LocalDate dataReferencia = LocalDate.of(1900, 1, 1);
 		String pedido = "";
 		String plano = "";
 		String CnpjCpf = "";
@@ -128,43 +132,45 @@ public class MainRunner implements CommandLineRunner {
 			CellType type = cell.getCellType();
 			if (type == CellType.NUMERIC)
 				mesReferencia = formatarData(cell.getDateCellValue());
-			if (type == CellType.STRING)
+			if (type == CellType.STRING) {
 				mesReferencia = cell.getStringCellValue();
+				dataReferencia = Utils.transformarDataStringEmLocalDate(mesReferencia);
+			}
 		}
 		cell = row.getCell(5);
 		if (cell != null) {
 			CellType type = cell.getCellType();
 			if (type == CellType.NUMERIC) {
-				int result = (int) Math.round(cell.getNumericCellValue());
+				Long result = (Long) Math.round(cell.getNumericCellValue());
 				pedido = String.valueOf(result);
 			} else {
-				pedido = cell.getStringCellValue();
+				String valorString = cell.getStringCellValue();
+				valorString = valorString.replaceAll("[\\D]", "");
+				Long result = Long.parseLong(valorString);
+				pedido = String.valueOf(result);
 			}
 		}
 		cell = row.getCell(7);
 		if (cell != null) {
-			plano = cell.toString();/*
-									 * CellType type = cell.getCellType(); if (type == CellType.NUMERIC) plano =
-									 * String.valueOf(cell.getNumericCellValue()); if (type == CellType.STRING)
-									 * plano = cell.getStringCellValue();
-									 */
+			plano = cell.toString();
 		}
 		cell = row.getCell(9);
 		if (cell != null) {
-			CnpjCpf = cell.toString();/*
-										 * CellType type = cell.getCellType(); if (type == CellType.NUMERIC) CnpjCpf =
-										 * String.valueOf(cell.getNumericCellValue()); if (type == CellType.STRING)
-										 * CnpjCpf = cell.getStringCellValue();
-										 */
+			CellType type = cell.getCellType();
+			if (type == CellType.NUMERIC) {
+				Long result = (Long) Math.round(cell.getNumericCellValue());
+				CnpjCpf = String.valueOf(result);
+			} else {
+				String valorString = cell.getStringCellValue();
+				valorString = valorString.replaceAll("[\\D]", "");
+				Long result = Long.parseLong(valorString);
+				CnpjCpf = String.valueOf(result);
+			}
 		}
 		cell = row.getCell(11);
 		if (cell != null) {
 			motivoObservacao = cell
-					.toString();/*
-								 * CellType type = cell.getCellType(); if (type == CellType.NUMERIC)
-								 * motivoObservacao = String.valueOf(cell.getNumericCellValue()); if (type ==
-								 * CellType.STRING) motivoObservacao = cell.getStringCellValue();
-								 */
+					.toString();
 		}
 		cell = row.getCell(13);
 		if (cell != null) {
@@ -187,13 +193,12 @@ public class MainRunner implements CommandLineRunner {
 		if (cell != null) {
 			CellType type = cell.getCellType();
 			if (type == CellType.NUMERIC) {
-				int result = (int) Math.round(cell.getNumericCellValue());
+				Long result = (Long) Math.round(cell.getNumericCellValue());
 				mercadoContrato = String.valueOf(result);
 			} else {
 				mercadoContrato = cell.getStringCellValue();
 			}
 		}
-
 		cell = row.getCell(17);
 		if (cell != null) {
 			CellType type = cell.getCellType();
@@ -216,6 +221,7 @@ public class MainRunner implements CommandLineRunner {
 		Lancamento lancamento = new Lancamento();
 		lancamento.setLinhaPlanilha(linhaPlanilha);
 		lancamento.setMesReferencia(mesReferencia);
+		lancamento.setDataReferencia(dataReferencia);
 		lancamento.setPedido(pedido.trim());
 		lancamento.setPlano(plano.trim());
 		lancamento.setCnpjCpf(CnpjCpf);
