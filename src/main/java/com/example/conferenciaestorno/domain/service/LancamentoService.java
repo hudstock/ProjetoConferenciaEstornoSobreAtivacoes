@@ -1,5 +1,7 @@
 package com.example.conferenciaestorno.domain.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +23,8 @@ public class LancamentoService {
 	public Lancamento buscarPorId(long id) {
 		return lancamentoRepository.findById(null).orElseThrow(()->new RuntimeException("Lancamento não encontrado"));		
 	}
-
+	
+	public List<String> buscarDistinctPedidos(){
+		return lancamentoRepository.findDistinctPedidos();		
+	}
 }

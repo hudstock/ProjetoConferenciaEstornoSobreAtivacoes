@@ -22,6 +22,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.conferenciaestorno.domain.model.Lancamento;
+import com.example.conferenciaestorno.domain.model.ResultadoProjection;
 import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 import com.example.conferenciaestorno.domain.repository.LancamentoRepository;
 import com.example.conferenciaestorno.domain.util.Utils;
@@ -41,7 +42,9 @@ public class MainRunner implements CommandLineRunner {
 		// testeBuscarLancamentosPorTipo();
 
 		// EXECUÇÕES
-		importarPlanilha();
+		//importarPlanilha();
+		
+		calcularResultadoCruzamento();
 		// CRIAR METODO PARA NOVA ABA DE APENAS CONTRATOS
 		// CRIAR MÉTODO PARA NOVA ABA APENAS ESTORNOS
 		// CRIAR MÉTODO PARA NOVA ABA AGRUPAMENTO CONTRATOS E ESTORNOS E TOTAIS
@@ -98,6 +101,30 @@ public class MainRunner implements CommandLineRunner {
 			System.out.println(lancamento);
 		});
 	}
+	
+	public void calcularResultadoCruzamento() {
+		List<String> result = lancamentoRepository.findDistinctPedidos();
+		System.out.println("Total de registros: "+result.size());
+		
+		ResultadoProjection calculo = lancamentoRepository.findResultado("1116568921");
+		System.out.println(calculo.getPedido());
+		System.out.println(calculo.getTotalContrato());
+		System.out.println(calculo.getTotalEstorno());
+		System.out.println(calculo.getDataContrato());
+		System.out.println(calculo.getDataEstorno());
+		System.out.println(calculo.getDiferencaData());	
+		System.out.println(calculo.getDiferencaValor());		
+		
+		for (String pedido:result) {
+			//buscar total de contratos, buscar total de estornos
+			//buscar a data de contrato e a data de estorno
+			//calcular a diferente de datas
+			//calcular a diferenca dos valores
+			//salvar em tabela de resultado: 
+			//codigo pedido, diferenca data, total contrato, total estorno e diferenca valores
+		}
+		
+	}
 
 	public void importarPlanilha() throws IOException {
 		InputStream input = getClass().getResourceAsStream("/Arquivo.xlsx");
@@ -132,10 +159,11 @@ public class MainRunner implements CommandLineRunner {
 			CellType type = cell.getCellType();
 			if (type == CellType.NUMERIC)
 				mesReferencia = formatarData(cell.getDateCellValue());
-			if (type == CellType.STRING) {
-				mesReferencia = cell.getStringCellValue();
-				dataReferencia = Utils.transformarDataStringEmLocalDate(mesReferencia);
-			}
+			
+			if (type == CellType.STRING)
+				mesReferencia = cell.getStringCellValue();				
+			
+			dataReferencia = Utils.tratarMesReferencia(mesReferencia);
 		}
 		cell = row.getCell(5);
 		if (cell != null) {

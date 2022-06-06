@@ -53,10 +53,17 @@ public class LancamentoServiceTest {
 	}
 	
 	@Test
-	public void tratarMesReferenciaDeveRetornarStringValida() {		
-		String result = Utils.tratarMesReferencia("JULHO_2012");
+	public void tratarMesReferenciaDeveRetornarStringValidaQuandoDataTexto() {		
+		LocalDate result = Utils.tratarMesReferencia("JULHO_2012");
 		System.out.println(result);		
-		Assertions.assertEquals("01/07/2012", result);		
+		Assertions.assertEquals(LocalDate.of(2012, 7, 1), result);		
+	}
+	
+	@Test
+	public void tratarMesReferenciaDeveRetornarStringValidaQuandoDataString() {		
+		LocalDate result = Utils.tratarMesReferencia("1/8/2010");
+		System.out.println(result);		
+		Assertions.assertEquals(LocalDate.of(2010, 8, 1), result);		
 	}
 	
 	@Test

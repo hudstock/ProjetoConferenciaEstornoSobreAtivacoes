@@ -9,9 +9,10 @@ public class Utils {
 		return LocalDate.of( Integer.valueOf(separado[2]), Integer.valueOf(separado[1]), Integer.valueOf(separado[0]));		
 	}
 	
-	public static String tratarMesReferencia(String entrada) {
+	public static LocalDate tratarMesReferencia(String entrada) {
 		String saida = entrada;
 		if (entrada.contains("_")) {
+			System.out.println("Tratando mês de referencia "+ entrada);
 			String[] separado = entrada.split("_");
 			System.out.println(separado[0]);
 			switch (separado[0]) {
@@ -55,7 +56,7 @@ public class Utils {
 				saida = entrada;
 			}
 		}
-		return saida;
+		return transformarDataStringEmLocalDate(saida);
 	}
 
 }
