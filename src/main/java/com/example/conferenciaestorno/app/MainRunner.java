@@ -1,73 +1,40 @@
 package com.example.conferenciaestorno.app;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.conferenciaestorno.domain.model.Lancamento;
-import com.example.conferenciaestorno.domain.model.Resultado;
-import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
-import com.example.conferenciaestorno.domain.repository.LancamentoRepository;
-import com.example.conferenciaestorno.domain.repository.ResultadoProjection;
-import com.example.conferenciaestorno.domain.repository.ResultadoRepository;
 import com.example.conferenciaestorno.domain.service.LancamentoService;
-import com.example.conferenciaestorno.util.Utils;
+import com.example.conferenciaestorno.domain.service.PlanilhaService;
 
 @Configuration
 public class MainRunner implements CommandLineRunner {
 
 	@Autowired
 	LancamentoService lancamentoService;
+	
+	@Autowired
+	PlanilhaService planilhaService;
 
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Starting Main Runner");
-		// TESTES
-		// testeAmbiente();
-		// testeAbrirPlanilha();
-		// testeBuscarLancamentosPorTipo();
-
-		// EXECUÇÕES
-		// importarPlanilha();
-
-		lancamentoService.calcularResultadoCruzamento();
-		// CRIAR METODO PARA NOVA ABA DE APENAS CONTRATOS
-		// CRIAR MÉTODO PARA NOVA ABA APENAS ESTORNOS
-		// CRIAR MÉTODO PARA NOVA ABA AGRUPAMENTO CONTRATOS E ESTORNOS E TOTAIS
-		// CRIAR METODO PARA NOVA ABA CONTRATOS SEM ESTORNOS
-		// CRIAR METODO PARA NOVA ABA ESTORNOS SEM CONTRATOS
-
+		
+		//Será executado apenas uma vez, para criar o banco de dados.
+		//planilhaService.importarPlanilha("/Arquivo.xlsx");
+		
+		//Será executado apenas uma vez, para gerar os resultados conforme dados do banco de dados;
+		//lancamentoService.calcularResultadoCruzamento();
+		
+		//Gerar agora funcionalidades que realiza o seguinte:
+		//Buscar os resultados, ordenados por diferença de data (crescente)		
+		//Para cada codigo de pedido, 
+		//buscar todos os lançamentos do tipo contrato e imprimir na planilha
+		//Buscar todos os lancamentos do tipo estorno e imprimir na planilha
+		//Imprimir na planilha o resultado nas colunas I,J e K (totais apenas) em uma linha em branco;
+		
+		//Relembrar: Como gerar um arquivo xlsx, criar uma aba e ir criando uma linha para cada resultado carregado (os 921)
+		
 	}
-
-	/*
-	 * FINALIZADOS Ler planilha e gravar em banco de dados; Consulta de todos os
-	 * contratos e todos os estornos conferidos;
-	 * 
-	 * PENDENTES gerar 1ª aba contendo apenas os pedidos (contratos) gerar; 2ª aba
-	 * contendo apenas os estornos gerar; 3ª aba contendo os agrupamentos de pedidos
-	 * e cnpj_cpf gerar; 4ª aba contendo os pedidos sem estorno gerar; 5ª aba
-	 * contendo os estornos sem pedido
-	 * 
-	 */
-
-	
-
-	
 
 }
