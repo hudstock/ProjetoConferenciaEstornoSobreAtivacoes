@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.example.conferenciaestorno.domain.util.Utils;
+import com.example.conferenciaestorno.util.Utils;
 
 @ExtendWith(SpringExtension.class)
 public class LancamentoServiceTest {

@@ -1,4 +1,4 @@
-package com.example.conferenciaestorno.domain.model;
+package com.example.conferenciaestorno.domain.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

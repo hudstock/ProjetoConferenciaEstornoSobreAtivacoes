@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.conferenciaestorno.domain.model.Lancamento;
-import com.example.conferenciaestorno.domain.model.ResultadoProjection;
 import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 
 public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
@@ -32,7 +31,7 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
 
 	@Query(value = "select pedido, contrato.total total_contrato, contrato.data data_contrato, estorno.total total_estorno, estorno.data data_estorno,\n"
 			+ "contrato.total-estorno.total as diferenca_valor,\n"
-			+ "estorno.data - contrato.data as diferenca_data\n"
+			+ "DATEDIFF (estorno.data, contrato.data) as diferenca_data\n"
 			+ "from \n"
 			+ "(select pedido, sum(valor) total, MIN(data_referencia) as data \n"
 			+ "from lancamento\n"

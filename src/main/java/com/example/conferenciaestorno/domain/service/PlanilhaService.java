@@ -1,66 +1,47 @@
 package com.example.conferenciaestorno.domain.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.conferenciaestorno.domain.model.Lancamento;
-import com.example.conferenciaestorno.domain.model.Resultado;
 import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
-import com.example.conferenciaestorno.domain.repository.LancamentoRepository;
-import com.example.conferenciaestorno.domain.repository.ResultadoProjection;
 import com.example.conferenciaestorno.util.Utils;
 
 @Service
-public class LancamentoService {
+public class PlanilhaService {
 	
 	@Autowired
-	LancamentoRepository lancamentoRepository;
+	LancamentoService lancamentoService;
 	
-	@Autowired
-	ResultadoService resultadoService;
-	
-	
-	
-	public Lancamento salvar (Lancamento lancamento) {		
-		return lancamentoRepository.save(lancamento);
-	}
-	
-	public Lancamento buscarPorId(long id) {
-		return lancamentoRepository.findById(null).orElseThrow(()->new RuntimeException("Lancamento não encontrado"));		
-	}
-	
-	public List<String> buscarDistinctPedidos(){
-		return lancamentoRepository.findDistinctPedidos();		
-	}
-	
-	public void calcularResultadoCruzamento() {
-		List<String> totalPedidos = lancamentoRepository.findDistinctPedidos();
-		System.out.println("Total de registros: " + totalPedidos.size());	
-
-		for (String pedido : totalPedidos) {
-			System.out.println("Calculano resultado para o pedido:"+pedido);
-			ResultadoProjection resultadoCalculo = lancamentoRepository.findResultado(pedido);
-
-			Resultado resultado = new Resultado();
-			resultado.setPedido(resultadoCalculo.getPedido());
-			resultado.setTotalContrato(resultadoCalculo.getTotalContrato());
-			resultado.setTotalEstorno(resultadoCalculo.getTotalEstorno());
-			resultado.setDataContrato(resultadoCalculo.getDataContrato());
-			resultado.setDataEstorno(resultadoCalculo.getDataEstorno());
-			resultado.setDiferencaData(resultadoCalculo.getDiferencaData());
-			resultado.setDiferencaValor(resultadoCalculo.getDiferencaValor());
-			System.out.println(resultado);
-			resultadoService.salvar(resultado);
+	///Arquivo.xlsx
+	public void importarPlanilha(String arquivo) throws IOException {
+		InputStream input = getClass().getResourceAsStream(arquivo);
+		Workbook wb = new XSSFWorkbook(input);
+		Sheet sheet = wb.getSheetAt(0);
+		Iterator<Row> linhaIterator = sheet.iterator();
+		int contador = 1;
+		while (linhaIterator.hasNext()) {
+			Row row = linhaIterator.next();
+			if (row.getRowNum() >= 1) {
+				lancamentoService.importarLinha(row);
+				contador++;
+			}
 		}
+		System.out.println("Total de Registros: " + contador);
+		wb.close();
 	}
-	
 	
 	public void importarLinha(Row row) {
 		String mesReferencia = "";
@@ -175,6 +156,7 @@ public class LancamentoService {
 		lancamento.setValor(valor);
 		lancamento.setMercadoContrato(mercadoContrato.trim());
 		lancamento.setTipoLancamento(tipoLancamento);
-		lancamentoRepository.save(lancamento);
+		lancamentoService.salvar(lancamento);
 	}
+
 }

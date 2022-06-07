@@ -1,5 +1,6 @@
-package com.example.conferenciaestorno.domain.util;
+package com.example.conferenciaestorno.util;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 public class Utils {
@@ -7,6 +8,11 @@ public class Utils {
 	public static LocalDate transformarDataStringEmLocalDate(String entrada) {
 		String[] separado = entrada.split("/");
 		return LocalDate.of( Integer.valueOf(separado[2]), Integer.valueOf(separado[1]), Integer.valueOf(separado[0]));		
+	}
+	
+	public static String formatarData(java.util.Date dataFimPlaca) {
+		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+		return formato.format(dataFimPlaca);
 	}
 	
 	public static LocalDate tratarMesReferencia(String entrada) {
