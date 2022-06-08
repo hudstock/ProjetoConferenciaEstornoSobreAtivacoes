@@ -53,7 +53,7 @@ public class TestesAmbiente {
 		}
 
 		System.out.println("Buscando Lancamento com Pedido = 1");
-		List<Lancamento> results = lancamentoRepository.findAllByPedido("1");
+		List<Lancamento> results = lancamentoRepository.findAllByPedidoOrderByTipoLancamento("1");
 		results.stream().forEach((Lancamento lancamento) -> {
 			System.out.println(lancamento);
 		});
@@ -73,7 +73,7 @@ public class TestesAmbiente {
 		lancamentoRepository.save(novoLancamento);
 
 		System.out.println("Buscando Lancamento com Pedido = teste");
-		List<Lancamento> results3 = lancamentoRepository.findAllByPedido("teste");
+		List<Lancamento> results3 = lancamentoRepository.findAllByPedidoOrderByTipoLancamento("teste");
 		results3.stream().forEach((Lancamento lancamento) -> {
 			System.out.println(lancamento);
 		});

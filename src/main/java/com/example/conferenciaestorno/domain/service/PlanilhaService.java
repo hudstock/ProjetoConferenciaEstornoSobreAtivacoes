@@ -1,21 +1,24 @@
 package com.example.conferenciaestorno.domain.service;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Workbook;	
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.conferenciaestorno.domain.model.Lancamento;
+import com.example.conferenciaestorno.domain.model.Resultado;
 import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 import com.example.conferenciaestorno.util.Utils;
 
@@ -24,6 +27,9 @@ public class PlanilhaService {
 	
 	@Autowired
 	LancamentoService lancamentoService;
+	
+	@Autowired
+	ResultadoService resultadoService;
 	
 	///Arquivo.xlsx
 	public void importarPlanilha(String arquivo) throws IOException {
@@ -35,7 +41,7 @@ public class PlanilhaService {
 		while (linhaIterator.hasNext()) {
 			Row row = linhaIterator.next();
 			if (row.getRowNum() >= 1) {
-				lancamentoService.importarLinha(row);
+				importarLinha(row);
 				contador++;
 			}
 		}
@@ -158,5 +164,80 @@ public class PlanilhaService {
 		lancamento.setTipoLancamento(tipoLancamento);
 		lancamentoService.salvar(lancamento);
 	}
+	
+	public void exportarResultadoCruzamento() throws IOException {
+		// create a new file
+				
+		Workbook planilha = new XSSFWorkbook();		
+		Row linha;		
+		Cell celula;		
+		Sheet aba = planilha.createSheet();		
+		List<Resultado> resultados = resultadoService.buscarTodos();		
+		
+		int linhaAtual = 1;
+		for (Resultado resultado : resultados) {
+						
+			List<Lancamento> lancamentos = lancamentoService.buscarTodosPorPedido(resultado.getPedido());
+			if (lancamentos.isEmpty()) {
+				System.out.println("GRAVE! Lancamentos não encontrado!!!!");
+				linhaAtual++;
+				continue;
+			}
+			
+			for (Lancamento lancamento: lancamentos) {
+				linha = aba.createRow(linhaAtual);
+				System.out.println("Criando linha "+linhaAtual);				
+				System.out.println("Incluindo o seguinte lancamento:");
+				System.out.println(lancamento);
+				
+				celula = linha.createCell(0, CellType.STRING);
+				celula.setCellValue(lancamento.getTipoLancamento().toString());
+				
+				celula = linha.createCell(1, CellType.NUMERIC);
+				celula.setCellValue(lancamento.getLinhaPlanilha());
+				
+				celula = linha.createCell(2, CellType.STRING);
+				celula.setCellValue(lancamento.getMesReferencia());
+				
+				celula = linha.createCell(3, CellType.STRING);
+				celula.setCellValue(lancamento.getPedido());
+				
+				celula = linha.createCell(4, CellType.STRING);
+				celula.setCellValue(lancamento.getPlano());
+				
+				celula = linha.createCell(5, CellType.STRING);
+				celula.setCellValue(lancamento.getCnpjCpf());
+				
+				celula = linha.createCell(6, CellType.STRING);
+				celula.setCellValue(lancamento.getMotivoObservacao());
+				
+				celula = linha.createCell(7, CellType.NUMERIC);
+				celula.setCellValue(lancamento.getValor().doubleValue());
+				
+				linhaAtual++;				
+			}
+			linha = aba.createRow(linhaAtual);
+			System.out.println("Criando linha "+linhaAtual);				
+			System.out.println("Incluindo o resultado:");
+			System.out.println(resultado);
+			
+			celula = linha.createCell(8, CellType.NUMERIC);
+			celula.setCellValue(resultado.getTotalContrato().doubleValue());
+			
+			celula = linha.createCell(9, CellType.NUMERIC);
+			celula.setCellValue(resultado.getTotalEstorno().doubleValue());
+			
+			celula = linha.createCell(10, CellType.NUMERIC);
+			celula.setCellValue(resultado.getDiferencaValor().doubleValue());	
+			
+			linhaAtual++;					
+		}		
+		
+		FileOutputStream arquivoResultado = new FileOutputStream("resultado.xlsx");
+		planilha.write(arquivoResultado);
+		arquivoResultado.close();
+		
+	}
+	//Fórmula excel para pesquisar segunda coluna de valor , caso a primeira esteja vazia - =SUMIF(N$2:N$13741;"";O$2:O$13741) 
 
 }

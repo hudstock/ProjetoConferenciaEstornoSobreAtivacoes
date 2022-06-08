@@ -10,7 +10,7 @@ import com.example.conferenciaestorno.domain.model.TipoLancamentoEnum;
 
 public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
 
-	List<Lancamento> findAllByPedido(String pedido);
+	List<Lancamento> findAllByPedidoOrderByTipoLancamento(String pedido);
 
 	List<Lancamento> findAllByCnpjCpf(String pedido);
 
