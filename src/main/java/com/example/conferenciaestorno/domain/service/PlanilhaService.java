@@ -222,12 +222,15 @@ public class PlanilhaService {
 			System.out.println(resultado);
 			
 			celula = linha.createCell(8, CellType.NUMERIC);
-			celula.setCellValue(resultado.getTotalContrato().doubleValue());
+			celula.setCellValue(resultado.getDiferencaData());
 			
 			celula = linha.createCell(9, CellType.NUMERIC);
-			celula.setCellValue(resultado.getTotalEstorno().doubleValue());
+			celula.setCellValue(resultado.getTotalContrato().doubleValue());
 			
 			celula = linha.createCell(10, CellType.NUMERIC);
+			celula.setCellValue(resultado.getTotalEstorno().doubleValue());
+			
+			celula = linha.createCell(11, CellType.NUMERIC);
 			celula.setCellValue(resultado.getDiferencaValor().doubleValue());	
 			
 			linhaAtual++;					
